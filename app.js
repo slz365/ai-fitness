@@ -137,9 +137,6 @@ window.addEventListener('DOMContentLoaded', () => {
   bindEvents();
   // 每次进入都要求输入密码
   showLock();
-  // 测试标记：生成随机数（刷新后数字会变，用于测试刷新按钮）
-  const r = document.getElementById('test-random');
-  if (r) r.textContent = Math.floor(Math.random() * 100000);
 });
 
 // ===== 填充已保存的档案 =====
