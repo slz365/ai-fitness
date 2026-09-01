@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AI 健身教练</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 引导页：第一次打开录入信息（分步式） -->
+  <div id="page-onboard" class="page active">
+    <div class="onboard-wrap">
+      <h1>🏋️ AI 健身教练</h1>
+
+      <!-- 步骤 1：身体数据 -->
+      <div class="step active" id="step-1">
+        <p class="sub">第 1 步 · 身体数据</p>
+        <div class="field">
+          <label>身高（cm）</label>
+          <input type="number" id="input-height" placeholder="例如 175" />
+        </div>
+        <div class="field">
+          <label>体重（kg）</label>
+          <input type="number" id="input-weight" placeholder="例如 70" />
+        </div>
+        <button class="btn-primary" data-next="2">下一步</button>
+      </div>
+
+      <!-- 步骤 2：目标 -->
+      <div class="step" id="step-2">
+        <p class="sub">第 2 步 · 你的目标</p>
+        <div class="field">
+          <label>健身目标</label>
+          <div class="goal-options" id="goal-options">
+            <button class="goal-btn" data-goal="增肌">💪 增肌</button>
+            <button class="goal-btn" data-goal="减脂">🔥 减脂</button>
+            <button class="goal-btn" data-goal="塑形">✨ 塑形</button>
+            <button class="goal-btn" data-goal="力量提升">🏆 力量提升</button>
+          </div>
+          <input type="hidden" id="input-goal" value="" />
+        </div>
+        <button class="btn-primary" data-next="3">下一步</button>
+        <button class="btn-ghost" data-prev="1">上一步</button>
+      </div>
+
+      <!-- 步骤 3：动作 -->
+      <div class="step" id="step-3">
+        <p class="sub">第 3 步 · 你的动作和重量</p>
+        <div class="field">
+          <label>你练哪些动作？每个动作多大重量？</label>
+          <textarea id="input-movements" rows="4" placeholder="自由填写，例如：&#10;卧推 60kg、深蹲 80kg、硬拉 100kg、引体向上 自重"></textarea>
+        </div>
+        <button class="btn-primary" id="btn-start">完成，开始制定计划</button>
+        <button class="btn-ghost" data-prev="2">上一步</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主界面：底部导航 + 各页面 -->
+  <div id="app">
+    <!-- 首页 -->
+    <div id="page-home" class="page">
+      <div class="topbar">
+        <h2>我的目标</h2>
+        <span class="goal-badge" id="home-goal">—</span>
+      </div>
+      <div class="card">
+        <h3>📋 今天的训练</h3>
+        <p id="home-today">还没有计划，去「计划」页让 AI 帮你生成吧。</p>
+      </div>
+      <div class="quick-actions">
+        <button class="quick-btn" data-nav="record">🏋️ 记录训练</button>
+        <button class="quick-btn" data-nav="record">🍚 记录饮食</button>
+      </div>
+    </div>
+
+    <!-- 计划页 -->
+    <div id="page-plan" class="page">
+      <div class="topbar"><h2>训练计划</h2></div>
+      <div class="card">
+        <p id="plan-content">还没有计划，点下面让 AI 为你生成。</p>
+      </div>
+      <button class="btn-primary" id="btn-generate-plan">🤖 生成我的计划</button>
+      <div class="card">
+        <h3>💬 对计划提建议</h3>
+        <textarea id="input-suggest" rows="3" placeholder="例如：我想周二休息 / 深蹲想加重量"></textarea>
+        <button class="btn-primary" id="btn-suggest">发送建议</button>
+      </div>
+    </div>
+
+    <!-- 记录页 -->
+    <div id="page-record" class="page">
+      <div class="topbar"><h2>每日记录</h2></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="diet">🍚 饮食</button>
+        <button class="tab-btn" data-tab="workout">🏋️ 运动</button>
+      </div>
+      <div class="card">
+        <!-- 饮食专属：餐次 + 放纵餐 -->
+        <div id="diet-options">
+          <div class="field">
+            <label>哪一餐？</label>
+            <div class="meal-options">
+              <button class="meal-btn selected" data-meal="早餐">🌅 早餐</button>
+              <button class="meal-btn" data-meal="午餐">🌞 午餐</button>
+              <button class="meal-btn" data-meal="晚餐">🌙 晚餐</button>
+              <button class="meal-btn" data-meal="加餐">🍎 加餐</button>
+            </div>
+            <input type="hidden" id="input-meal" value="早餐" />
+          </div>
+          <div class="field">
+            <label class="cheat-label">
+              <input type="checkbox" id="input-cheat" />
+              <span>这是一顿放纵餐 😈</span>
+            </label>
+          </div>
+        </div>
+
+        <textarea id="input-record" rows="4" placeholder="饮食：两个鸡蛋一碗粥&#10;运动：卧推 5 组 60kg"></textarea>
+        <button class="btn-primary" id="btn-save-record">记录并让 AI 整理</button>
+      </div>
+      <div class="card">
+        <h3>🤖 今日 AI 评估</h3>
+        <p class="hint">记录完后点这里，AI 帮你判断今天是否达标并给出建议</p>
+        <button class="btn-primary" id="btn-evaluate">AI 评估今天</button>
+        <div id="evaluation-result" style="display:none; margin-top:14px;"></div>
+      </div>
+      <div class="card">
+        <h3>📊 我的记录</h3>
+        <div id="record-list">暂无记录</div>
+      </div>
+    </div>
+
+    <!-- 我的页 -->
+    <div id="page-me" class="page">
+      <div class="topbar"><h2>我的</h2></div>
+      <div class="card">
+        <h3>👤 我的档案</h3>
+        <p id="me-profile">未填写</p>
+      </div>
+      <div class="card">
+        <h3>🏋️ 我的动作库</h3>
+        <p id="me-movements">未填写</p>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-nav="home">🏠 首页</button>
+      <button class="nav-btn" data-nav="plan">📋 计划</button>
+      <button class="nav-btn" data-nav="record">📝 记录</button>
+      <button class="nav-btn" data-nav="me">👤 我的</button>
+    </nav>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

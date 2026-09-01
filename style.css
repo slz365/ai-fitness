@@ -1,0 +1,412 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0d0d0f;
+  color: #e6e6e6;
+  min-height: 100vh;
+}
+
+/* ===== 页面切换 ===== */
+.page {
+  display: none;
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.page.active {
+  display: block;
+}
+
+/* ===== 引导页 ===== */
+#page-onboard {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d0f;
+}
+
+.onboard-wrap {
+  background: #1a1a1e;
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 92%;
+  max-width: 420px;
+  border: 1px solid #2a2a30;
+}
+
+.onboard-wrap h1 {
+  font-size: 22px;
+  text-align: center;
+}
+
+.sub {
+  text-align: center;
+  color: #8a8a94;
+  font-size: 14px;
+  margin: 8px 0 20px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #c0c0c8;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #2a2a30;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #0f0f12;
+  color: #e6e6e6;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #55555e;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.goal-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.goal-btn {
+  flex: 1 1 40%;
+  padding: 10px;
+  border: 1px solid #2a2a30;
+  border-radius: 10px;
+  background: #0f0f12;
+  color: #c0c0c8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.goal-btn.selected {
+  background: #6a5cff;
+  color: #fff;
+  border-color: #6a5cff;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #6a5cff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-ghost {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #8a8a94;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* 分步引导 */
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+/* ===== 主界面背景图 ===== */
+#app {
+  background: url('bg.jpg') center / cover fixed;
+  min-height: 100vh;
+}
+
+/* 加一层半透明遮罩，保证文字清晰 */
+#app::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 13, 15, 0.82);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 让内容浮在遮罩之上 */
+#app .page,
+#app .bottom-nav {
+  position: relative;
+  z-index: 1;
+}
+
+/* 卡片改用半透明，露出背景 */
+.card {
+  background: rgba(26, 26, 30, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.quick-btn {
+  background: rgba(26, 26, 30, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.tab-btn {
+  background: rgba(26, 26, 30, 0.7);
+}
+
+.bottom-nav {
+  background: rgba(26, 26, 30, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+/* ===== 主界面 ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.topbar h2 {
+  font-size: 20px;
+}
+
+.goal-badge {
+  background: #6a5cff;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.card {
+  background: #1a1a1e;
+  border: 1px solid #2a2a30;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.card h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 14px;
+  color: #b0b0ba;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.quick-btn {
+  flex: 1;
+  padding: 16px;
+  border: 1px solid #2a2a30;
+  border-radius: 14px;
+  background: #1a1a1e;
+  color: #e6e6e6;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #2a2a30;
+  border-radius: 10px;
+  background: #1a1a1e;
+  color: #b0b0ba;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #6a5cff;
+  color: #fff;
+  border-color: #6a5cff;
+}
+
+#record-list {
+  font-size: 14px;
+  color: #b0b0ba;
+}
+
+.hint {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+#evaluation-result {
+  font-size: 14px;
+  color: #d0d0d8;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  background: rgba(15, 15, 18, 0.6);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+#record-list .empty {
+  text-align: center;
+  color: #666;
+}
+
+.record-group {
+  margin-bottom: 16px;
+}
+
+.record-date {
+  font-weight: 600;
+  color: #6a5cff;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.record-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(15, 15, 18, 0.6);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.record-tag {
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.record-tag.diet {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffb14d;
+}
+
+.record-tag.workout {
+  background: rgba(106, 92, 255, 0.2);
+  color: #9d93ff;
+}
+
+.record-text {
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ===== 饮食选项 ===== */
+.meal-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meal-btn {
+  flex: 1 1 40%;
+  padding: 10px;
+  border: 1px solid #2a2a30;
+  border-radius: 10px;
+  background: #0f0f12;
+  color: #c0c0c8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.meal-btn.selected {
+  background: #6a5cff;
+  color: #fff;
+  border-color: #6a5cff;
+}
+
+.cheat-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 400 !important;
+  color: #ffadad;
+}
+
+.cheat-label input[type="checkbox"] {
+  width: auto;
+  accent-color: #ff5c5c;
+}
+
+/* 饮食标签用暖色，运动用紫色 */
+.record-tag.早餐, .record-tag.午餐, .record-tag.晚餐, .record-tag.加餐 {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffb14d;
+}
+
+/* ===== 底部导航 ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: #1a1a1e;
+  border-top: 1px solid #2a2a30;
+  padding: 6px 0;
+}
+
+.nav-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #777;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.nav-btn.active {
+  color: #6a5cff;
+  font-weight: 600;
+}

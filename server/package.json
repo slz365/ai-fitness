@@ -1,0 +1,14 @@
+{
+  "name": "ai-fitness-server",
+  "version": "1.0.0",
+  "description": "AI 健身教练后端服务",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  }
+}
