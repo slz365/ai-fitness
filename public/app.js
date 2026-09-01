@@ -29,6 +29,7 @@ const PLAN_KEY = 'ai_fitness_plan';           // 健身计划
 const EVAL_KEY = 'ai_fitness_evaluations';    // 评估历史
 const WEIGHT_KEY = 'ai_fitness_weight';       // 体重历史
 const STRENGTH_KEY = 'ai_fitness_strength';   // 力量历史
+const CHECKIN_KEY = 'ai_fitness_checkin';     // 打卡记录 {date: true}
 
 // 读取档案
 function getProfile() {
@@ -160,6 +161,7 @@ function restoreSaved() {
   renderWeightChart();
   renderStrengthChart();
   renderCalendar();
+  updateCheckinStatus();
 }
 
 // ===== 绑定事件 =====
@@ -422,6 +424,15 @@ function bindEvents() {
   document.getElementById('day-modal').addEventListener('click', (e) => {
     if (e.target === document.getElementById('day-modal')) closeModal();
   });
+
+  // ===== 今日打卡 =====
+  document.getElementById('btn-checkin').addEventListener('click', () => {
+    const checkins = getByKey(CHECKIN_KEY) || {};
+    checkins[todayStr()] = true;
+    setByKey(CHECKIN_KEY, checkins);
+    updateCheckinStatus();
+    renderCalendar();
+  });
 }
 
 // 渲染记录列表（按日期分组）
@@ -555,18 +566,37 @@ function renderStrengthChart() {
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-11
 
+// 读取打卡记录
+function getCheckins() {
+  return getByKey(CHECKIN_KEY) || {};
+}
+
+// 更新"今日打卡"按钮状态
+function updateCheckinStatus() {
+  const checkins = getCheckins();
+  const btn = document.getElementById('btn-checkin');
+  const status = document.getElementById('checkin-status');
+  if (checkins[todayStr()]) {
+    status.textContent = '✅ 今天已打卡';
+    btn.textContent = '今日已打卡';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+  } else {
+    status.textContent = '今天还没打卡';
+    btn.textContent = '今日打卡';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
 // 渲染打卡日历（可翻月，点击日期查看当天记录）
 function renderCalendar() {
   const records = getRecords();
+  const checkins = getCheckins();
+  const today = todayStr();
   // 有记录（饮食或运动）的日期
   const hasRecords = new Set();
-  const workedDays = new Set();
-  Object.keys(records).forEach(date => {
-    hasRecords.add(date);
-    if (records[date].some(item => item.type === 'workout')) {
-      workedDays.add(date);
-    }
-  });
+  Object.keys(records).forEach(date => { hasRecords.add(date); });
 
   const year = calYear;
   const month = calMonth;
@@ -584,13 +614,17 @@ function renderCalendar() {
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty-cell"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-    const done = workedDays.has(dateStr);
+    const isChecked = !!checkins[dateStr];
+    const isPast = dateStr < today; // 过去的日期（含今天之前的）
+    const isToday = dateStr === today;
     const has = hasRecords.has(dateStr);
-    const isToday = dateStr === todayStr();
     let cls = 'cal-cell';
-    if (done) cls += ' done';
+    if (isChecked) {
+      cls += ' checked'; // 已打卡 → 绿
+    } else if (dateStr <= today) {
+      cls += ' missed'; // 未打卡（过去或今天）→ 红
+    }
     if (isToday) cls += ' today';
-    // 有记录但没运动（只有饮食）也给个弱标记
     const mark = has ? '<span class="cal-dot"></span>' : '';
     html += '<div class="' + cls + '" data-date="' + dateStr + '">' + d + mark + '</div>';
   }

@@ -510,8 +510,13 @@ textarea {
   background: transparent;
 }
 
-.cal-cell.done {
-  background: #6a5cff;
+.cal-cell.checked {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.cal-cell.missed {
+  background: #e74c3c;
   color: #fff;
 }
 
