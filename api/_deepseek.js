@@ -36,8 +36,9 @@ async function callDeepSeek(messages) {
     body: JSON.stringify({ model: MODEL, messages: cleanMessages, temperature: 0.7 }),
   });
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error('DeepSeek 调用失败: ' + res.status + ' ' + err);
+    const errText = await res.text();
+    // 透传 DeepSeek 的完整错误信息，便于定位
+    throw new Error('DeepSeek 调用失败(' + res.status + '): ' + errText);
   }
   const data = await res.json();
   return data.choices[0].message.content;
