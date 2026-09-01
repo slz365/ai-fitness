@@ -37,6 +37,14 @@ node server.js
 http://localhost:3000
 ```
 
+### 获取 DeepSeek API Key
+
+1. 前往 [platform.deepseek.com](https://platform.deepseek.com) 注册并登录
+2. 在「API Keys」页面创建密钥（形如 `sk-...`）
+3. 将密钥填入 `server/.env` 的 `DEEPSEEK_API_KEY`（本地开发）或 Vercel 环境变量（部署）
+
+> ⚠️ **安全提醒**：`server/.env` 已在 `.gitignore` 中排除，请勿将真实 Key 提交到仓库。可参考 `server/.env.example` 填写。
+
 ### 部署到 Vercel
 
 1. 将代码推送到 GitHub 仓库
