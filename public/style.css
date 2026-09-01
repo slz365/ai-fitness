@@ -25,7 +25,6 @@ body {
 /* ===== 密码验证页 ===== */
 #page-lock {
   min-height: 100vh;
-  display: flex;
   align-items: center;
   justify-content: center;
   background: #0d0d0f;
