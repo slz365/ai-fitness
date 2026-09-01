@@ -1,5 +1,9 @@
 // ===== AI 健身教练 - 前端逻辑 =====
 
+// 访问密码（想改密码就改这里）
+const ACCESS_PASSWORD = '123456';
+const AUTH_KEY = 'ai_fitness_authed'; // 本地记录是否已通过验证
+
 // 后端地址：自动适配
 // - 部署到 Vercel 后：用相对路径（前端和 API 同域）
 // - 本地开发：用 localhost:3000
@@ -102,8 +106,16 @@ function showApp() {
   window.scrollTo(0, 0);
 }
 
-// ===== 初始化 =====
-window.addEventListener('DOMContentLoaded', () => {
+// ===== 显示密码页 =====
+function showLock() {
+  document.getElementById('page-lock').classList.add('active');
+  document.getElementById('page-onboard').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ===== 进入 App（通过密码验证后）=====
+function enterApp() {
+  document.getElementById('page-lock').classList.remove('active');
   const profile = getProfile();
   if (profile) {
     fillProfile(profile);
@@ -112,7 +124,17 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     showOnboard();
   }
+}
+
+// ===== 初始化 =====
+window.addEventListener('DOMContentLoaded', () => {
   bindEvents();
+  // 已通过验证则直接进入，否则显示密码页
+  if (localStorage.getItem(AUTH_KEY) === 'ok') {
+    enterApp();
+  } else {
+    showLock();
+  }
 });
 
 // ===== 填充已保存的档案 =====
@@ -147,6 +169,23 @@ function restoreSaved() {
 
 // ===== 绑定事件 =====
 function bindEvents() {
+  // 密码验证
+  document.getElementById('btn-unlock').addEventListener('click', () => {
+    const input = document.getElementById('input-password');
+    if (input.value === ACCESS_PASSWORD) {
+      localStorage.setItem(AUTH_KEY, 'ok');
+      enterApp();
+    } else {
+      document.getElementById('lock-error').style.display = 'block';
+      input.value = '';
+    }
+  });
+  document.getElementById('input-password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('btn-unlock').click();
+    }
+  });
+
   // 目标选择
   document.querySelectorAll('.goal-btn').forEach(btn => {
     btn.addEventListener('click', () => {

@@ -8,6 +8,17 @@
 </head>
 <body>
 
+  <!-- 密码验证页 -->
+  <div id="page-lock" class="page active">
+    <div class="lock-wrap">
+      <h1>🔒 AI 健身教练</h1>
+      <p class="sub">请输入访问密码</p>
+      <input type="password" id="input-password" placeholder="访问密码" />
+      <button class="btn-primary" id="btn-unlock">进入</button>
+      <p class="lock-error" id="lock-error" style="display:none;">密码错误，请重试</p>
+    </div>
+  </div>
+
   <!-- 引导页：第一次打开录入信息（分步式） -->
   <div id="page-onboard" class="page active">
     <div class="onboard-wrap">

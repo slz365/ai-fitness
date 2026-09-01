@@ -22,6 +22,44 @@ body {
   display: block;
 }
 
+/* ===== 密码验证页 ===== */
+#page-lock {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d0f;
+}
+
+#page-lock.active {
+  display: flex;
+}
+
+.lock-wrap {
+  background: #1a1a1e;
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 92%;
+  max-width: 360px;
+  border: 1px solid #2a2a30;
+  text-align: center;
+}
+
+.lock-wrap h1 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.lock-wrap .sub {
+  margin: 8px 0 20px;
+}
+
+.lock-error {
+  color: #ff5c5c;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
 /* ===== 引导页 ===== */
 #page-onboard {
   min-height: 100vh;
