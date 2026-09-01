@@ -249,6 +249,28 @@ textarea {
   font-size: 13px;
 }
 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #2a2a30;
+  border-radius: 50%;
+  background: #1a1a1e;
+  font-size: 16px;
+  cursor: pointer;
+  color: #c0c0c8;
+  line-height: 1;
+}
+
+.refresh-btn:active {
+  transform: rotate(180deg);
+}
+
 .card {
   background: #1a1a1e;
   border: 1px solid #2a2a30;

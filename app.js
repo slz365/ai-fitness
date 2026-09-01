@@ -172,6 +172,11 @@ function restoreSaved() {
 
 // ===== 绑定事件 =====
 function bindEvents() {
+  // 刷新按钮
+  document.getElementById('btn-refresh').addEventListener('click', () => {
+    location.reload();
+  });
+
   // 密码验证
   document.getElementById('btn-unlock').addEventListener('click', () => {
     const input = document.getElementById('input-password');
