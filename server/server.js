@@ -90,8 +90,8 @@ app.post('/api/analyze-diet', async (req, res) => {
   }
 });
 
-// 静态文件：托管前端页面
-app.use(express.static(path.join(__dirname, '..')));
+// 静态文件：托管前端页面（public 目录）
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

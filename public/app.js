@@ -412,7 +412,7 @@ function drawLineChart(container, points) {
     container.innerHTML = '<p class="empty">暂无数据</p>';
     return;
   }
-  const W = 320, H = 140, padL = 34, padB = 22, padT = 14, padR = 10;
+  const W = 320, H = 150, padL = 34, padB = 22, padT = 22, padR = 10;
   const values = points.map(p => p.value);
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -433,7 +433,12 @@ function drawLineChart(container, points) {
     `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="3" fill="#6a5cff"/>`
   ).join('');
 
-  // 标签（最多显示首尾几个，避免拥挤）
+  // 数值标签（每个点上方显示具体数值）
+  let valueLabels = points.map((p, i) =>
+    `<text x="${x(i).toFixed(1)}" y="${(y(p.value) - 8).toFixed(1)}" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">${p.value}</text>`
+  ).join('');
+
+  // 日期标签（最多显示首尾几个，避免拥挤）
   let labels = points.map((p, i) => {
     if (points.length > 8 && i !== 0 && i !== points.length - 1 && i % Math.ceil(points.length / 8) !== 0) return '';
     return `<text x="${x(i).toFixed(1)}" y="${H - 6}" font-size="8" fill="#888" text-anchor="middle">${p.label}</text>`;
@@ -445,6 +450,7 @@ function drawLineChart(container, points) {
       <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="#333"/>
       <polyline points="${lines.trim()}" fill="none" stroke="#6a5cff" stroke-width="2"/>
       ${dots}
+      ${valueLabels}
       ${labels}
     </svg>`;
 }
