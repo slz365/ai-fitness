@@ -77,13 +77,16 @@ function showPage(pageId) {
 
 function showOnboard() {
   document.getElementById('page-onboard').classList.add('active');
+  document.getElementById('page-onboard').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
 }
 
 function showApp() {
   document.getElementById('page-onboard').classList.remove('active');
+  document.getElementById('page-onboard').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   showPage('home');
+  window.scrollTo(0, 0);
 }
 
 // ===== 初始化 =====
