@@ -157,7 +157,23 @@
 
       <div class="card">
         <h3>🔥 训练打卡日历</h3>
+        <div class="cal-nav">
+          <button class="cal-arrow" id="cal-prev">‹</button>
+          <span class="cal-title" id="cal-title">—</span>
+          <button class="cal-arrow" id="cal-next">›</button>
+        </div>
         <div id="calendar"></div>
+      </div>
+
+      <!-- 点击日期弹出的记录详情 -->
+      <div id="day-modal" class="modal-mask" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-head">
+            <span id="modal-date">—</span>
+            <button class="modal-close" id="modal-close">✕</button>
+          </div>
+          <div id="modal-body" class="modal-body"></div>
+        </div>
       </div>
 
       <div class="card">

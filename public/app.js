@@ -406,6 +406,22 @@ function bindEvents() {
     document.getElementById('input-strength-weight').value = '';
     renderStrengthChart();
   });
+
+  // ===== 日历翻月 =====
+  document.getElementById('cal-prev').addEventListener('click', () => changeMonth(-1));
+  document.getElementById('cal-next').addEventListener('click', () => changeMonth(1));
+
+  // 点击日期格子（事件委托）
+  document.getElementById('calendar').addEventListener('click', (e) => {
+    const cell = e.target.closest('.cal-cell[data-date]');
+    if (cell) showDayModal(cell.dataset.date);
+  });
+
+  // 弹窗关闭
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('day-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('day-modal')) closeModal();
+  });
 }
 
 // 渲染记录列表（按日期分组）
@@ -535,39 +551,94 @@ function renderStrengthChart() {
   });
 }
 
-// 渲染打卡日历（当月）
+// ===== 日历状态：当前查看的年月 =====
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-11
+
+// 渲染打卡日历（可翻月，点击日期查看当天记录）
 function renderCalendar() {
   const records = getRecords();
+  // 有记录（饮食或运动）的日期
+  const hasRecords = new Set();
   const workedDays = new Set();
-  // 有运动记录的日期算打卡
   Object.keys(records).forEach(date => {
+    hasRecords.add(date);
     if (records[date].some(item => item.type === 'workout')) {
       workedDays.add(date);
     }
   });
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const firstDay = new Date(year, month, 1).getDay(); // 0=周日
+  const year = calYear;
+  const month = calMonth;
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  // 更新标题
+  document.getElementById('cal-title').textContent = year + '年' + (month + 1) + '月';
+
   const container = document.getElementById('calendar');
-  let html = '<div class="cal-title">' + year + '年' + (month + 1) + '月</div>';
-  html += '<div class="cal-grid">';
+  let html = '<div class="cal-grid">';
   ['日', '一', '二', '三', '四', '五', '六'].forEach(d => {
     html += '<div class="cal-head">' + d + '</div>';
   });
-  for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell"></div>';
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty-cell"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     const done = workedDays.has(dateStr);
+    const has = hasRecords.has(dateStr);
     const isToday = dateStr === todayStr();
     let cls = 'cal-cell';
     if (done) cls += ' done';
     if (isToday) cls += ' today';
-    html += '<div class="' + cls + '">' + d + '</div>';
+    // 有记录但没运动（只有饮食）也给个弱标记
+    const mark = has ? '<span class="cal-dot"></span>' : '';
+    html += '<div class="' + cls + '" data-date="' + dateStr + '">' + d + mark + '</div>';
   }
   html += '</div>';
   container.innerHTML = html;
+}
+
+// 翻月
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+// 显示某天的记录弹窗
+function showDayModal(dateStr) {
+  const records = getRecords();
+  const items = records[dateStr] || [];
+  document.getElementById('modal-date').textContent = prettyDate(dateStr) + (dateStr === todayStr() ? ' · 今天' : '');
+
+  const body = document.getElementById('modal-body');
+  if (items.length === 0) {
+    body.innerHTML = '<p class="empty">这天没有记录</p>';
+  } else {
+    body.innerHTML = '';
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'record-row';
+      const tag = document.createElement('span');
+      tag.className = 'record-tag ' + item.type;
+      if (item.type === 'diet') {
+        tag.textContent = (item.meal || '饮食') + (item.cheat ? ' 😈' : '');
+      } else {
+        tag.textContent = '🏋️ 运动';
+      }
+      const txt = document.createElement('span');
+      txt.className = 'record-text';
+      txt.textContent = item.text;
+      row.appendChild(tag);
+      row.appendChild(txt);
+      body.appendChild(row);
+    });
+  }
+  document.getElementById('day-modal').style.display = 'flex';
+}
+
+// 关闭弹窗
+function closeModal() {
+  document.getElementById('day-modal').style.display = 'none';
 }
