@@ -22,6 +22,10 @@ async function api(path, body) {
 // 本地存储的 key
 const STORAGE_KEY = 'ai_fitness_profile';
 const RECORDS_KEY = 'ai_fitness_records';
+const PLAN_KEY = 'ai_fitness_plan';           // 健身计划
+const EVAL_KEY = 'ai_fitness_evaluations';    // 评估历史
+const WEIGHT_KEY = 'ai_fitness_weight';       // 体重历史
+const STRENGTH_KEY = 'ai_fitness_strength';   // 力量历史
 
 // 读取档案
 function getProfile() {
@@ -61,6 +65,15 @@ function prettyDate(str) {
   return (d.getMonth() + 1) + '月' + d.getDate() + '日 周' + week;
 }
 
+// ===== 通用存取 =====
+function getByKey(key) {
+  const raw = localStorage.getItem(key);
+  return raw ? JSON.parse(raw) : null;
+}
+function setByKey(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
 // ===== 页面切换 =====
 function showPage(pageId) {
   // 隐藏所有主界面 page
@@ -95,6 +108,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (profile) {
     fillProfile(profile);
     showApp();
+    restoreSaved();
   } else {
     showOnboard();
   }
@@ -108,6 +122,27 @@ function fillProfile(profile) {
   document.getElementById('me-profile').textContent =
     '身高 ' + profile.height + 'cm，体重 ' + profile.weight + 'kg，目标：' + profile.goal;
   document.getElementById('me-movements').textContent = profile.movements || '未填写';
+}
+
+// ===== 恢复持久化内容（计划、图表、日历）=====
+function restoreSaved() {
+  // 恢复计划
+  const plan = getByKey(PLAN_KEY);
+  if (plan) {
+    document.getElementById('plan-content').textContent = plan;
+  }
+  // 恢复当天评估
+  const evals = getByKey(EVAL_KEY) || {};
+  const today = todayStr();
+  if (evals[today]) {
+    const result = document.getElementById('evaluation-result');
+    result.style.display = 'block';
+    result.textContent = evals[today];
+  }
+  // 渲染图表和日历
+  renderWeightChart();
+  renderStrengthChart();
+  renderCalendar();
 }
 
 // ===== 绑定事件 =====
@@ -208,6 +243,7 @@ function bindEvents() {
     btn.disabled = true;
     try {
       const data = await api('/api/plan', { profile });
+      setByKey(PLAN_KEY, data.plan); // 持久化保存
       document.getElementById('plan-content').textContent = data.plan;
     } catch (e) {
       alert('生成失败：' + e.message);
@@ -226,6 +262,7 @@ function bindEvents() {
     btn.disabled = true;
     try {
       const data = await api('/api/plan', { profile, suggestion });
+      setByKey(PLAN_KEY, data.plan); // 持久化保存
       document.getElementById('plan-content').textContent = data.plan;
       document.getElementById('input-suggest').value = '';
     } catch (e) {
@@ -284,6 +321,10 @@ function bindEvents() {
         date: today,
         records: records[today],
       });
+      // 保存评估历史（按日期）
+      const evals = getByKey(EVAL_KEY) || {};
+      evals[today] = data.evaluation;
+      setByKey(EVAL_KEY, evals);
       result.style.display = 'block';
       result.textContent = data.evaluation;
     } catch (e) {
@@ -292,6 +333,30 @@ function bindEvents() {
     }
     btn.textContent = 'AI 评估今天';
     btn.disabled = false;
+  });
+
+  // ===== 体重记录 =====
+  document.getElementById('btn-save-weight').addEventListener('click', () => {
+    const w = document.getElementById('input-bodyweight').value;
+    if (!w) { alert('请输入体重'); return; }
+    const log = getByKey(WEIGHT_KEY) || [];
+    log.push({ date: todayStr(), weight: Number(w) });
+    setByKey(WEIGHT_KEY, log);
+    document.getElementById('input-bodyweight').value = '';
+    renderWeightChart();
+  });
+
+  // ===== 力量记录 =====
+  document.getElementById('btn-save-strength').addEventListener('click', () => {
+    const name = document.getElementById('input-strength-name').value.trim();
+    const weight = document.getElementById('input-strength-weight').value;
+    if (!name || !weight) { alert('请输入动作名和重量'); return; }
+    const log = getByKey(STRENGTH_KEY) || [];
+    log.push({ date: todayStr(), name, weight: Number(weight) });
+    setByKey(STRENGTH_KEY, log);
+    document.getElementById('input-strength-name').value = '';
+    document.getElementById('input-strength-weight').value = '';
+    renderStrengthChart();
   });
 }
 
@@ -338,4 +403,117 @@ function renderRecords() {
 
     list.appendChild(group);
   });
+}
+
+// ===== 折线图（纯 SVG）=====
+function drawLineChart(container, points) {
+  // points: [{label, value}]
+  if (!points || points.length === 0) {
+    container.innerHTML = '<p class="empty">暂无数据</p>';
+    return;
+  }
+  const W = 320, H = 140, padL = 34, padB = 22, padT = 14, padR = 10;
+  const values = points.map(p => p.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = (max - min) || 1;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+
+  const x = i => padL + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW);
+  const y = v => padT + (1 - (v - min) / range) * innerH;
+
+  let lines = '';
+  for (let i = 0; i < points.length; i++) {
+    lines += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ' ' + y(points[i].value).toFixed(1) + ' ';
+  }
+
+  // 数据点圆
+  let dots = points.map((p, i) =>
+    `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="3" fill="#6a5cff"/>`
+  ).join('');
+
+  // 标签（最多显示首尾几个，避免拥挤）
+  let labels = points.map((p, i) => {
+    if (points.length > 8 && i !== 0 && i !== points.length - 1 && i % Math.ceil(points.length / 8) !== 0) return '';
+    return `<text x="${x(i).toFixed(1)}" y="${H - 6}" font-size="8" fill="#888" text-anchor="middle">${p.label}</text>`;
+  }).join('');
+
+  container.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+      <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="#333"/>
+      <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="#333"/>
+      <polyline points="${lines.trim()}" fill="none" stroke="#6a5cff" stroke-width="2"/>
+      ${dots}
+      ${labels}
+    </svg>`;
+}
+
+// 渲染体重曲线
+function renderWeightChart() {
+  const log = getByKey(WEIGHT_KEY) || [];
+  const points = log.map(e => ({ label: e.date.slice(5), value: e.weight }));
+  drawLineChart(document.getElementById('weight-chart'), points);
+}
+
+// 渲染力量曲线（按动作分组，各画一条）
+function renderStrengthChart() {
+  const log = getByKey(STRENGTH_KEY) || [];
+  const container = document.getElementById('strength-chart');
+  if (log.length === 0) {
+    container.innerHTML = '<p class="empty">暂无数据</p>';
+    return;
+  }
+  // 按动作名分组
+  const groups = {};
+  log.forEach(e => {
+    if (!groups[e.name]) groups[e.name] = [];
+    groups[e.name].push({ label: e.date.slice(5), value: e.weight });
+  });
+  let html = '';
+  Object.keys(groups).forEach(name => {
+    html += '<div class="chart-title">' + name + '</div><div class="chart-box"></div>';
+  });
+  container.innerHTML = html;
+  const boxes = container.querySelectorAll('.chart-box');
+  Object.keys(groups).forEach((name, idx) => {
+    drawLineChart(boxes[idx], groups[name]);
+  });
+}
+
+// 渲染打卡日历（当月）
+function renderCalendar() {
+  const records = getRecords();
+  const workedDays = new Set();
+  // 有运动记录的日期算打卡
+  Object.keys(records).forEach(date => {
+    if (records[date].some(item => item.type === 'workout')) {
+      workedDays.add(date);
+    }
+  });
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay(); // 0=周日
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const container = document.getElementById('calendar');
+  let html = '<div class="cal-title">' + year + '年' + (month + 1) + '月</div>';
+  html += '<div class="cal-grid">';
+  ['日', '一', '二', '三', '四', '五', '六'].forEach(d => {
+    html += '<div class="cal-head">' + d + '</div>';
+  });
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const done = workedDays.has(dateStr);
+    const isToday = dateStr === todayStr();
+    let cls = 'cal-cell';
+    if (done) cls += ' done';
+    if (isToday) cls += ' today';
+    html += '<div class="' + cls + '">' + d + '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
 }

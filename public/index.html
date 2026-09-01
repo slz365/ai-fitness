@@ -143,6 +143,30 @@
         <h3>🏋️ 我的动作库</h3>
         <p id="me-movements">未填写</p>
       </div>
+
+      <div class="card">
+        <h3>🔥 训练打卡日历</h3>
+        <div id="calendar"></div>
+      </div>
+
+      <div class="card">
+        <h3>⚖️ 体重记录</h3>
+        <div class="inline-form">
+          <input type="number" id="input-bodyweight" placeholder="今天体重 kg" step="0.1" />
+          <button class="btn-small" id="btn-save-weight">记录</button>
+        </div>
+        <div id="weight-chart" class="chart"></div>
+      </div>
+
+      <div class="card">
+        <h3>💪 力量进步</h3>
+        <div class="inline-form">
+          <input type="text" id="input-strength-name" placeholder="动作名，如 卧推" />
+          <input type="number" id="input-strength-weight" placeholder="重量 kg" step="0.5" />
+          <button class="btn-small" id="btn-save-strength">记录</button>
+        </div>
+        <div id="strength-chart" class="chart"></div>
+      </div>
     </div>
 
     <!-- 底部导航 -->

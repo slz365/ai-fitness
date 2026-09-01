@@ -413,3 +413,93 @@ textarea {
   color: #6a5cff;
   font-weight: 600;
 }
+
+/* ===== 打卡日历 ===== */
+.cal-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #c0c0c8;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-head {
+  text-align: center;
+  font-size: 11px;
+  color: #777;
+  padding: 4px 0;
+}
+
+.cal-cell {
+  text-align: center;
+  font-size: 13px;
+  padding: 8px 0;
+  border-radius: 8px;
+  color: #b0b0ba;
+  background: rgba(15, 15, 18, 0.6);
+}
+
+.cal-cell.done {
+  background: #6a5cff;
+  color: #fff;
+}
+
+.cal-cell.today {
+  outline: 2px solid #ffb14d;
+}
+
+/* ===== 曲线图 ===== */
+.chart {
+  margin-top: 12px;
+  min-height: 40px;
+}
+
+.chart .empty {
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+.chart-title {
+  font-size: 13px;
+  color: #c0c0c8;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.chart-box {
+  margin-bottom: 8px;
+}
+
+/* ===== 行内表单（记录体重/力量）===== */
+.inline-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.inline-form input {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-small {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #6a5cff;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-small:active {
+  opacity: 0.85;
+}
