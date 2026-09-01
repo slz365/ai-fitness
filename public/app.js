@@ -439,7 +439,7 @@ function drawLineChart(container, points) {
 
   let lines = '';
   for (let i = 0; i < points.length; i++) {
-    lines += (i === 0 ? 'M' : 'L') + x(i).toFixed(1) + ' ' + y(points[i].value).toFixed(1) + ' ';
+    lines += x(i).toFixed(1) + ',' + y(points[i].value).toFixed(1) + ' ';
   }
 
   // 数据点圆
