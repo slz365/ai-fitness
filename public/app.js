@@ -211,6 +211,20 @@ function bindEvents() {
     btn.addEventListener('click', () => showPage(btn.dataset.nav));
   });
 
+  // 重新填写档案
+  document.getElementById('btn-reonboard').addEventListener('click', () => {
+    if (!confirm('重新填写档案？你的记录、计划、图表数据会保留，只更新基本信息。')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    // 清空引导页输入，回到第一步
+    document.getElementById('input-height').value = '';
+    document.getElementById('input-weight').value = '';
+    document.getElementById('input-goal').value = '';
+    document.getElementById('input-movements').value = '';
+    document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('selected'));
+    switchStep(1);
+    showOnboard();
+  });
+
   // 记录页分栏
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
