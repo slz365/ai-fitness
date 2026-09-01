@@ -11,6 +11,19 @@
 - **数据可视化**：体重曲线、力量进步曲线（按动作分组）、训练打卡日历
 - **本地持久化**：档案、记录、计划、评估结果均保存在浏览器本地，关闭不丢失
 
+## 📸 界面截图
+
+<div align="center">
+  <img src="docs/images/screenshot-1.png" width="30%" />
+  <img src="docs/images/screenshot-2.png" width="30%" />
+  <img src="docs/images/screenshot-3.png" width="30%" />
+  <img src="docs/images/screenshot-4.png" width="30%" />
+  <img src="docs/images/screenshot-5.png" width="30%" />
+  <img src="docs/images/screenshot-6.png" width="30%" />
+  <img src="docs/images/screenshot-7.png" width="30%" />
+  <img src="docs/images/screenshot-8.png" width="30%" />
+</div>
+
 ## 🛠 技术栈
 
 - **前端**：原生 HTML + CSS + JavaScript（响应式，适配手机）
