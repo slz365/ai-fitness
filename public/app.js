@@ -2,7 +2,6 @@
 
 // 访问密码（想改密码就改这里）
 const ACCESS_PASSWORD = '123456';
-const AUTH_KEY = 'ai_fitness_authed'; // 本地记录是否已通过验证
 
 // 后端地址：自动适配
 // - 部署到 Vercel 后：用相对路径（前端和 API 同域）
@@ -129,12 +128,8 @@ function enterApp() {
 // ===== 初始化 =====
 window.addEventListener('DOMContentLoaded', () => {
   bindEvents();
-  // 已通过验证则直接进入，否则显示密码页
-  if (localStorage.getItem(AUTH_KEY) === 'ok') {
-    enterApp();
-  } else {
-    showLock();
-  }
+  // 每次进入都要求输入密码
+  showLock();
 });
 
 // ===== 填充已保存的档案 =====
@@ -173,7 +168,7 @@ function bindEvents() {
   document.getElementById('btn-unlock').addEventListener('click', () => {
     const input = document.getElementById('input-password');
     if (input.value === ACCESS_PASSWORD) {
-      localStorage.setItem(AUTH_KEY, 'ok');
+      input.value = '';
       enterApp();
     } else {
       document.getElementById('lock-error').style.display = 'block';
