@@ -1,7 +1,13 @@
 // ===== AI 健身教练 - 前端逻辑 =====
 
-// 访问密码（想改密码就改这里）
-const ACCESS_PASSWORD = '123456';
+// 默认访问密码（第一次用这个，之后可在界面里改）
+const DEFAULT_PASSWORD = '123456';
+const PASSWORD_KEY = 'ai_fitness_password'; // 用户自定义密码存在这里
+
+// 获取当前生效的密码（优先用户自定义，否则默认）
+function getPassword() {
+  return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+}
 
 // 后端地址：自动适配
 // - 部署到 Vercel 后：用相对路径（前端和 API 同域）
@@ -169,7 +175,7 @@ function bindEvents() {
   // 密码验证
   document.getElementById('btn-unlock').addEventListener('click', () => {
     const input = document.getElementById('input-password');
-    if (input.value === ACCESS_PASSWORD) {
+    if (input.value === getPassword()) {
       input.value = '';
       enterApp();
     } else {
@@ -259,6 +265,31 @@ function bindEvents() {
     document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('selected'));
     switchStep(1);
     showOnboard();
+  });
+
+  // 修改访问密码
+  document.getElementById('btn-change-pwd').addEventListener('click', () => {
+    const oldPwd = document.getElementById('input-old-pwd').value;
+    const newPwd = document.getElementById('input-new-pwd').value;
+    const newPwd2 = document.getElementById('input-new-pwd2').value;
+
+    if (oldPwd !== getPassword()) {
+      alert('当前密码错误');
+      return;
+    }
+    if (!newPwd || newPwd.length < 4) {
+      alert('新密码至少 4 位');
+      return;
+    }
+    if (newPwd !== newPwd2) {
+      alert('两次输入的新密码不一致');
+      return;
+    }
+    localStorage.setItem(PASSWORD_KEY, newPwd);
+    document.getElementById('input-old-pwd').value = '';
+    document.getElementById('input-new-pwd').value = '';
+    document.getElementById('input-new-pwd2').value = '';
+    alert('密码修改成功！下次进入请用新密码');
   });
 
   // 记录页分栏
